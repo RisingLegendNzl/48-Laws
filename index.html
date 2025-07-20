@@ -9,21 +9,18 @@
 </head>
 <body class="bg-black">
 
-    <div class="flex flex-col md:flex-row">
-        <nav id="sidebar" class="w-full md:w-80 md:h-screen md:sticky md:top-0 bg-[#1a1a1a] p-6 md:p-8 flex-shrink-0 border-b md:border-b-0 md:border-r border-gray-700">
-            <h1 class="text-2xl font-bold text-white mb-6">The 48 Laws of Power</h1>
-            <ul id="sidebar-nav" class="space-y-2">
-                </ul>
-        </nav>
-
-        <main id="main-content" class="w-full p-6 md:p-12 lg:p-16 md:h-screen md:overflow-y-auto">
-             </main>
-    </div>
+    <main id="app-container" class="pb-24">
+        </main>
+    
+    <nav id="bottom-nav" class="fixed bottom-0 left-0 right-0 bg-[#1a1a1a] border-t border-gray-700 flex justify-around">
+        <button data-view="home" class="nav-btn flex-1 p-4 text-center text-white font-semibold active">Home</button>
+        <button data-view="laws" class="nav-btn flex-1 p-4 text-center text-gray-400 font-semibold">Laws</button>
+    </nav>
     
     <div id="error-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-50">
         <div class="bg-gray-800 rounded-lg p-6 max-w-sm w-full text-center">
             <h3 class="text-lg font-bold text-white mb-4">API Error</h3>
-            <p id="error-message" class="text-gray-300 mb-6">Could not fetch response from the AI. Please try again later.</p>
+            <p id="error-message" class="text-gray-300 mb-6">Could not fetch response from the AI.</p>
             <button id="close-modal-btn" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors">Close</button>
         </div>
     </div>
