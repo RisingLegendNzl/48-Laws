@@ -41,6 +41,15 @@ body {
     }
 }
 
+/* Subsection titles (e.g., "The Law", "Keys to Practice") */
+.subsection-title {
+    color: #d1d5db; /* Lighter gray */
+    font-size: 1.25rem; /* 20px */
+    font-weight: 600;
+    margin-bottom: 0.75rem; /* 12px */
+}
+
+
 /* Gemini API Feature Styles */
 .gemini-btn {
     background-color: #374151;
