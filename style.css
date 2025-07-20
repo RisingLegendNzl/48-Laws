@@ -10,36 +10,32 @@ body {
     color: #E5E7EB;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-    width: 8px;
-}
-::-webkit-scrollbar-track {
-    background: #111111;
-}
-::-webkit-scrollbar-thumb {
-    background: #4B5563;
-    border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-    background: #6B7280;
-}
-
-/* Sidebar and Content */
-.sidebar-link.active {
-    background-color: #DC2626;
+/* Bottom Navigation */
+.nav-btn.active {
     color: #FFFFFF;
+    border-top: 3px solid #DC2626;
+    background-color: #374151;
 }
 
-.content-section {
-    padding-top: 4rem; /* Offset for sticky header on mobile */
+/* View container */
+.view {
+    padding: 1.5rem; /* 24px */
 }
 
-@media (min-width: 768px) {
-    .content-section {
-        padding-top: 0;
-    }
+/* Laws Dropdown */
+#laws-dropdown {
+    background-color: #1F2937;
+    border-color: #4B5563;
+    color: #F3F4F6;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
 }
+
 
 /* Subsection titles (e.g., "The Law", "Keys to Practice") */
 .subsection-title {
