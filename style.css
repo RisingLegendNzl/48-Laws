@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #111111;
+    color: #E5E7EB;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #111111;
+}
+::-webkit-scrollbar-thumb {
+    background: #4B5563;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #6B7280;
+}
+
+/* Sidebar and Content */
+.sidebar-link.active {
+    background-color: #DC2626;
+    color: #FFFFFF;
+}
+
+.content-section {
+    padding-top: 4rem; /* Offset for sticky header on mobile */
+}
+
+@media (min-width: 768px) {
+    .content-section {
+        padding-top: 0;
+    }
+}
+
+/* Gemini API Feature Styles */
+.gemini-btn {
+    background-color: #374151;
+    color: #F3F4F6;
+    border: 1px solid #4B5563;
+    transition: all 0.2s ease-in-out;
+}
+
+.gemini-btn:hover {
+    background-color: #4B5563;
+    border-color: #6B7280;
+}
+
+.gemini-output {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-left: 3px solid #DC2626;
+    padding: 1rem;
+    margin-top: 0.75rem;
+    border-radius: 0.25rem;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #DC2626;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
