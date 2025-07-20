@@ -1,9 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- IMPORTANT: API KEY ---
-    // You must get your own API key from Google AI Studio and paste it here.
-    // Do not share this key publicly.
-    const apiKey = "YOUR_API_KEY_HERE";
-
+    // The API key is no longer stored here for security.
+    
     const laws = [
         {
             title: "Law 1: Never Outshine the Master",
@@ -296,16 +293,15 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     const appContainer = document.getElementById('app-container');
-    const bottomNav = document.getElementById('bottom-nav');
+    const topNav = document.getElementById('top-nav');
+    const pageTitle = document.getElementById('page-title');
     const errorModal = document.getElementById('error-modal');
     const closeModalBtn = document.getElementById('close-modal-btn');
 
     // --- Modal Logic ---
     const showModal = (message) => {
         const errorMessage = document.getElementById('error-message');
-        if (errorMessage) {
-            errorMessage.textContent = message || "An unknown error occurred.";
-        }
+        if (errorMessage) errorMessage.textContent = message || "An unknown error occurred.";
         errorModal.classList.remove('hidden');
         errorModal.classList.add('flex');
     };
@@ -314,83 +310,69 @@ document.addEventListener('DOMContentLoaded', () => {
         errorModal.classList.remove('flex');
     });
 
-    // --- Gemini API Call ---
+    // --- Gemini API Call via Backend ---
     async function getGeminiResponse(prompt, outputElement) {
-        if (!apiKey || apiKey === "YOUR_API_KEY_HERE") {
-            showModal("API Key is missing. Please add it to script.js.");
-            return;
-        }
         outputElement.innerHTML = '<div class="loader"></div>';
-
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
-        const payload = {
-            contents: [{ parts: [{ text: prompt }] }],
-            safetySettings: [
-                { "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE" },
-                { "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE" },
-                { "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE" },
-                { "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE" }
-            ]
-        };
+        
+        // The URL now points to our own backend endpoint
+        const apiUrl = '/api/generate';
 
         try {
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify({ prompt: prompt }) // Send the prompt in the request body
             });
+
             if (!response.ok) {
-                const errorBody = await response.json();
-                throw new Error(errorBody?.error?.message || `Request failed with status ${response.status}`);
+                const errorResult = await response.json();
+                throw new Error(errorResult.error || `Request failed with status ${response.status}`);
             }
+
             const result = await response.json();
-            if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts[0].text) {
-                const text = result.candidates[0].content.parts[0].text.replace(/\n/g, '<br>');
-                outputElement.innerHTML = `<p class="text-gray-300 leading-relaxed">${text}</p>`;
-            } else {
-                throw new Error("API returned an empty response. This might be due to safety filters.");
-            }
+            const text = result.text.replace(/\n/g, '<br>');
+            outputElement.innerHTML = `<p class="text-gray-300 leading-relaxed">${text}</p>`;
+
         } catch (error) {
-            console.error('Gemini API Error:', error);
+            console.error('API Error:', error);
             outputElement.innerHTML = '';
             showModal(error.message);
         }
     }
     
     // --- View Rendering Logic ---
-    const renderHomeView = () => {
-        return `
+    const views = {
+        home: `
             <div id="home-view" class="view">
-                <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">An Interactive Guide to Power</h2>
                 <div class="space-y-4 text-gray-400 leading-relaxed">
-                    <p>Welcome. This guide is an interactive exploration of Robert Greene's "The 48 Laws of Power."</p>
-                    <p>Use the "Laws" tab below to select a law from the dropdown menu. For each law, you will find a summary, a practical exercise, and a critical perspective. You can also use the AI-powered buttons to generate modern scenarios and counter-arguments.</p>
+                    <p>This guide is an interactive exploration of Robert Greene's controversial and influential work, "The 48 Laws of Power."</p>
+                    <p>The laws are presented here not as a moral endorsement, but as a tool for understanding the dynamics of power. Use the "Laws" tab to begin.</p>
                     <p class="font-semibold text-red-500">Warning: Many of these laws are manipulative and amoral. This guide is for educational and defensive purposes only.</p>
                 </div>
             </div>
-        `;
-    };
-
-    const renderLawsView = () => {
-        const options = laws.map((law, index) => `<option value="${index}">Law ${index + 1}: ${law.title.split(': ')[1]}</option>`).join('');
-        return `
-            <div id="laws-view" class="view hidden">
-                <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Select a Law</h2>
-                <select id="laws-dropdown" class="w-full p-3 rounded-md border text-lg">
+        `,
+        laws: `
+            <div id="laws-view" class="view">
+                <select id="laws-dropdown" class="w-full p-3 rounded-md border text-lg mb-8">
                     <option value="">-- Choose a Law --</option>
-                    ${options}
+                    ${laws.map((law, index) => `<option value="${index}">Law ${index + 1}: ${law.title.split(': ')[1]}</option>`).join('')}
                 </select>
-                <div id="law-content-container" class="mt-8"></div>
+                <div id="law-content-container"></div>
             </div>
-        `;
+        `,
+        videos: `
+            <div id="videos-view" class="view">
+                <div class="text-center text-gray-500">
+                    <p>Video content coming soon.</p>
+                </div>
+            </div>
+        `
     };
 
     const renderLawContent = (lawIndex) => {
         const law = laws[lawIndex];
         return `
-            <h2 class="text-3xl font-bold text-white mb-2">${law.title.split(': ')[1]}</h2>
-            <p class="text-red-500 font-semibold text-lg mb-8">Law ${lawIndex + 1}</p>
-            <div class="space-y-10">
+            <div class="space-y-8">
                 <div>
                     <h3 class="subsection-title">The Law</h3>
                     <p class="text-gray-400 leading-relaxed">${law.summary}</p>
@@ -405,11 +387,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="space-y-6 pt-4">
                     <div>
-                        <button class="gemini-btn scenario-btn w-full sm:w-auto px-4 py-2 rounded-md font-semibold" data-law-title="${law.title}">✨ Generate Scenario</button>
+                        <button class="gemini-btn scenario-btn w-full sm:w-auto px-4 py-2 rounded-md" data-law-title="${law.title}">✨ Generate Scenario</button>
                         <div class="gemini-output scenario-output mt-3"></div>
                     </div>
                     <div>
-                        <button class="gemini-btn counter-btn w-full sm:w-auto px-4 py-2 rounded-md font-semibold" data-law-title="${law.title}">✨ Generate Counter-Argument</button>
+                        <button class="gemini-btn counter-btn w-full sm:w-auto px-4 py-2 rounded-md" data-law-title="${law.title}">✨ Generate Counter-Argument</button>
                         <div class="gemini-output counter-output mt-3"></div>
                     </div>
                 </div>
@@ -417,53 +399,51 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     };
 
-    // --- Initial App Setup ---
-    appContainer.innerHTML = renderHomeView() + renderLawsView();
-    const homeView = document.getElementById('home-view');
-    const lawsView = document.getElementById('laws-view');
-    const lawsDropdown = document.getElementById('laws-dropdown');
-    const lawContentContainer = document.getElementById('law-content-container');
-
-    // --- Event Listeners ---
-    bottomNav.addEventListener('click', (e) => {
-        const navBtn = e.target.closest('.nav-btn');
-        if (!navBtn) return;
+    // --- App Initialization and Event Handling ---
+    function switchView(viewName) {
+        appContainer.innerHTML = views[viewName];
+        pageTitle.textContent = `${viewName.charAt(0).toUpperCase() + viewName.slice(1)} | 48 Laws Of Power`;
         
         document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.classList.remove('active', 'text-white');
-            btn.classList.add('text-gray-400');
+            btn.classList.toggle('active', btn.dataset.view === viewName);
         });
-        navBtn.classList.add('active', 'text-white');
-        navBtn.classList.remove('text-gray-400');
 
-        if (navBtn.dataset.view === 'home') {
-            homeView.classList.remove('hidden');
-            lawsView.classList.add('hidden');
-        } else {
-            homeView.classList.add('hidden');
-            lawsView.classList.remove('hidden');
+        // Add event listeners for the newly rendered content
+        if (viewName === 'laws') {
+            const lawsDropdown = document.getElementById('laws-dropdown');
+            const lawContentContainer = document.getElementById('law-content-container');
+
+            lawsDropdown.addEventListener('change', (e) => {
+                const selectedIndex = e.target.value;
+                if (selectedIndex) {
+                    lawContentContainer.innerHTML = renderLawContent(parseInt(selectedIndex, 10));
+                } else {
+                    lawContentContainer.innerHTML = '';
+                }
+            });
+
+            lawContentContainer.addEventListener('click', (e) => {
+                const button = e.target.closest('.gemini-btn');
+                if (!button) return;
+
+                const lawTitle = button.dataset.lawTitle;
+                const outputElement = button.nextElementSibling;
+                const prompt = button.classList.contains('scenario-btn')
+                    ? `Generate a short, modern-day scenario (e.g., in an office, social media, or business context) that clearly illustrates "${lawTitle}" in action. Keep it concise and to the point.`
+                    : `Provide a strong ethical or practical counter-argument against "${lawTitle}". Alternatively, describe a concise scenario where applying this law would likely backfire.`;
+                
+                getGeminiResponse(prompt, outputElement);
+            });
+        }
+    }
+
+    topNav.addEventListener('click', (e) => {
+        const navBtn = e.target.closest('.nav-btn');
+        if (navBtn && navBtn.dataset.view) {
+            switchView(navBtn.dataset.view);
         }
     });
 
-    lawsDropdown.addEventListener('change', (e) => {
-        const selectedIndex = e.target.value;
-        if (selectedIndex) {
-            lawContentContainer.innerHTML = renderLawContent(parseInt(selectedIndex, 10));
-        } else {
-            lawContentContainer.innerHTML = '';
-        }
-    });
-
-    lawContentContainer.addEventListener('click', (e) => {
-        const button = e.target.closest('.gemini-btn');
-        if (!button) return;
-
-        const lawTitle = button.dataset.lawTitle;
-        const outputElement = button.nextElementSibling;
-        const prompt = button.classList.contains('scenario-btn')
-            ? `Generate a short, modern-day scenario (e.g., in an office, social media, or business context) that clearly illustrates "${lawTitle}" in action. Keep it concise and to the point.`
-            : `Provide a strong ethical or practical counter-argument against "${lawTitle}". Alternatively, describe a concise scenario where applying this law would likely backfire.`;
-        
-        getGeminiResponse(prompt, outputElement);
-    });
+    // Initial load
+    switchView('home');
 });
