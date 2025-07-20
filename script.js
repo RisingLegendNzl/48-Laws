@@ -323,14 +323,17 @@ document.addEventListener('DOMContentLoaded', () => {
         outputElement.innerHTML = '<div class="loader"></div>'; // Show loader
         
         const apiKey = ""; // API key will be handled by the environment
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
         
         const payload = {
-            contents: [{
-                parts: [{
-                    text: prompt
-                }]
-            }]
+            contents: [{ parts: [{ text: prompt }] }],
+            // Add safety settings to reduce the chance of the API refusing to answer
+            safetySettings: [
+                { "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE" },
+                { "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE" },
+                { "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE" },
+                { "category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE" }
+            ]
         };
 
         try {
@@ -341,16 +344,20 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) {
-                throw new Error(`API request failed with status ${response.status}`);
+                 // Try to get more specific error info from the response body
+                const errorBody = await response.json();
+                const errorMessage = errorBody?.error?.message || `API request failed with status ${response.status}`;
+                throw new Error(errorMessage);
             }
 
             const result = await response.json();
             
             if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts[0].text) {
-                const text = result.candidates[0].content.parts[0].text;
+                const text = result.candidates[0].content.parts[0].text.replace(/\n/g, '<br>'); // Replace newlines with <br> for HTML rendering
                 outputElement.innerHTML = `<p class="text-gray-300 leading-relaxed">${text}</p>`;
             } else {
-                throw new Error("Invalid response structure from API.");
+                 // Handle cases where the API returns a 200 OK but no content (e.g., blocked by safety settings)
+                throw new Error("The API returned an empty response, possibly due to safety filters.");
             }
 
         } catch (error) {
@@ -360,46 +367,64 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-
     // --- UI Population and Event Listeners ---
+    
+    // 1. Create and add the Home section
+    const createHomeSection = () => {
+        // Add Home link to sidebar
+        const homeListItem = document.createElement('li');
+        homeListItem.innerHTML = `<a href="#home" class="sidebar-link block p-2 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors duration-200 active" data-target="home">Home</a>`;
+        sidebarNav.prepend(homeListItem);
+
+        // Add Home content to main area
+        const homeSection = document.createElement('section');
+        homeSection.id = 'home';
+        homeSection.className = 'content-section mb-16';
+        homeSection.innerHTML = `
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">An Interactive Guide to Power</h2>
+            <div class="space-y-4 text-gray-400 leading-relaxed">
+                <p>Welcome. This guide is an interactive exploration of Robert Greene's controversial and influential work, "The 48 Laws of Power."</p>
+                <p>The laws outlined in this book are based on historical examples of manipulation, seduction, and the exercise of power. They are presented here not as a moral endorsement, but as a tool for understanding the dynamics of power that operate in the world around us—from the office to the world stage.</p>
+                <p>Use the sidebar to navigate through the laws. For each one, you will find a summary, a practical exercise, and a critical perspective. You can also use the AI-powered buttons to generate modern scenarios and counter-arguments to deepen your understanding.</p>
+                <p class="font-semibold text-red-500">Warning: Many of these laws are manipulative and amoral. This guide is for educational and defensive purposes only.</p>
+            </div>
+        `;
+        mainContent.appendChild(homeSection);
+    };
+
+    createHomeSection();
+
+    // 2. Populate the rest of the laws
     laws.forEach((law, index) => {
         const lawId = `law-${index + 1}`;
         const lawNumber = index + 1;
 
-        // Create sidebar link
         const listItem = document.createElement('li');
-        const link = document.createElement('a');
-        link.href = `#${lawId}`;
-        link.textContent = `Law ${lawNumber}`;
-        link.className = 'sidebar-link block p-2 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors duration-200';
-        link.dataset.target = lawId;
-        listItem.appendChild(link);
+        listItem.innerHTML = `<a href="#${lawId}" class="sidebar-link block p-2 rounded-md text-gray-400 hover:bg-gray-700 hover:text-white transition-colors duration-200" data-target="${lawId}">Law ${lawNumber}</a>`;
         sidebarNav.appendChild(listItem);
 
-        // Create main content section
         const section = document.createElement('section');
         section.id = lawId;
         const marginBottomClass = index === laws.length - 1 ? '' : 'mb-16';
         section.className = `content-section ${marginBottomClass}`;
         section.innerHTML = `
             <h2 class="text-3xl md:text-4xl font-bold text-white mb-2">${law.title.split(': ')[1]}</h2>
-            <p class="text-red-500 font-semibold text-lg mb-6">Law ${lawNumber}</p>
+            <p class="text-red-500 font-semibold text-lg mb-8">Law ${lawNumber}</p>
             
-            <div class="space-y-8">
+            <div class="space-y-10">
                 <div>
-                    <h3 class="text-xl font-semibold text-gray-300 border-b border-gray-700 pb-2 mb-3">Summary</h3>
+                    <h3 class="subsection-title">The Law</h3>
                     <p class="text-gray-400 leading-relaxed">${law.summary}</p>
                 </div>
                 <div>
-                    <h3 class="text-xl font-semibold text-gray-300 border-b border-gray-700 pb-2 mb-3">How to Practice</h3>
+                    <h3 class="subsection-title">Keys to Practice</h3>
                     <p class="text-gray-400 leading-relaxed">${law.practice}</p>
                 </div>
                 <div>
-                    <h3 class="text-xl font-semibold text-gray-300 border-b border-gray-700 pb-2 mb-3">Critical Perspective</h3>
+                    <h3 class="subsection-title">The Reversal</h3>
                     <p class="text-gray-400 leading-relaxed">${law.criticism}</p>
                 </div>
                 
-                <!-- Gemini Features -->
                 <div class="space-y-6 pt-4">
                     <div>
                         <button class="gemini-btn scenario-btn w-full sm:w-auto px-4 py-2 rounded-md font-semibold" data-law-title="${law.title}">✨ Generate Scenario</button>
@@ -410,38 +435,36 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="gemini-output counter-output mt-3"></div>
                     </div>
                 </div>
-
             </div>
         `;
         mainContent.appendChild(section);
     });
 
-    // Add event listeners for Gemini buttons
+    // 3. Add event listeners
     mainContent.addEventListener('click', (e) => {
-        if (e.target.classList.contains('scenario-btn')) {
-            const lawTitle = e.target.dataset.lawTitle;
-            const outputElement = e.target.nextElementSibling;
+        const button = e.target.closest('.gemini-btn');
+        if (!button) return;
+
+        const lawTitle = button.dataset.lawTitle;
+        const outputElement = button.nextElementSibling;
+
+        if (button.classList.contains('scenario-btn')) {
             const prompt = `Generate a short, modern-day scenario (e.g., in an office, social media, or business context) that clearly illustrates "${lawTitle}" in action. Keep it concise and to the point.`;
             getGeminiResponse(prompt, outputElement);
-        }
-        if (e.target.classList.contains('counter-btn')) {
-            const lawTitle = e.target.dataset.lawTitle;
-            const outputElement = e.target.nextElementSibling;
+        } else if (button.classList.contains('counter-btn')) {
             const prompt = `Provide a strong ethical or practical counter-argument against "${lawTitle}". Alternatively, describe a concise scenario where applying this law would likely backfire.`;
             getGeminiResponse(prompt, outputElement);
         }
     });
 
-
-    // Intersection Observer for scroll-spy functionality
+    // 4. Setup Intersection Observer
     const observerOptions = {
         root: document.querySelector('#main-content'),
         rootMargin: '0px 0px -60% 0px',
         threshold: 0
     };
 
-    const isMobile = window.innerWidth < 768;
-    if (isMobile) {
+    if (window.innerWidth < 768) {
         observerOptions.root = null;
         observerOptions.rootMargin = '-40% 0px -60% 0px';
     }
