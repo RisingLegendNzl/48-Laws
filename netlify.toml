@@ -1,8 +1,14 @@
 # This tells Netlify where your public files are.
-# The "." means the root directory.
 [build]
   publish = "."
 
 # This tells Netlify where your serverless functions are.
 [functions]
   directory = "api/"
+
+# This is the new, important rule.
+# It tells Netlify how to route requests to your function.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
