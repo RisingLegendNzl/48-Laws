@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             title: "Law 14: Pose as a Friend, Work as a Spy",
-    summary: "Knowing about your rival is critical. Use spies, or be a spy yourself. In polite social encounters, learn to probe. Ask indirect questions to get people to reveal their weaknesses and intentions. There is no occasion that is not an opportunity for artful spying.",
+            summary: "Knowing about your rival is critical. Use spies, or be a spy yourself. In polite social encounters, learn to probe. Ask indirect questions to get people to reveal their weaknesses and intentions. There is no occasion that is not an opportunity for artful spying.",
             practice: "In your next social or professional gathering, pay close attention to the conversations around you. What can you learn about the goals and motivations of others? Ask open-ended questions to encourage people to share more.",
             criticism: "This law encourages deceit and a violation of privacy. Building relationships on the premise of gathering intelligence is unethical and will ultimately lead to shallow and untrustworthy connections."
         },
@@ -360,8 +360,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     <h1>POWER</h1>
                     <p class="author-name">by Robert Greene</p>
                 </div>
-                <div class="home-content-area">
-                    </div>
+                <div class="text-center py-8">
+                    <a href="https://amzn.to/3UmR0qd" target="_blank" rel="noopener noreferrer" 
+                       class="inline-block bg-yellow-500 text-blue-900 font-bold py-3 px-6 rounded-lg hover:bg-yellow-600 transition-colors text-lg mt-8">
+                        Buy on Amazon
+                    </a>
+                    <p class="text-gray-400 text-sm mt-3">As an Amazon Associate, I earn from qualifying purchases.</p>
+                </div>
             </div>
         `,
         laws: `
@@ -447,7 +452,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (viewName === 'laws') {
             const lawsDropdown = document.getElementById('laws-dropdown');
             const lawContentContainer = document.getElementById('law-content-container');
-            const interplayLawsDropdown = document.getElementById('interplay-laws-dropdown'); // Reverted to dropdown
+            const interplayLawsDropdown = document.getElementById('interplay-laws-dropdown'); 
             const analyzeInterplayBtn = document.getElementById('analyze-interplay-btn');
             const interplayOutput = document.getElementById('interplay-output');
 
@@ -461,7 +466,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            // Event listener for the new Law Interplay button
+            // Event listener for the Law Interplay button
             analyzeInterplayBtn.addEventListener('click', () => {
                 const selectedOptions = Array.from(interplayLawsDropdown.selectedOptions)
                                             .map(option => laws[parseInt(option.value, 10)].title);
