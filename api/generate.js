@@ -15,17 +15,14 @@ export default async function handler(request) {
   }
 
   try {
-    // Netlify now often passes the request body directly when using 'request' object
-    // For POST requests, request.json() is often the way to get the body.
     let requestBody;
     try {
       requestBody = await request.json();
     } catch (e) {
-      // Handle cases where body might be empty or not valid JSON
       requestBody = {};
     }
 
-    const { prompt } = requestBody; // Use requestBody here
+    const { prompt } = requestBody;
 
     if (!prompt) {
       return createJsonResponse(400, { error: 'Prompt is required' });
@@ -36,7 +33,8 @@ export default async function handler(request) {
       return createJsonResponse(500, { error: 'API key not configured on the server.' });
     }
 
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
+    // *** CHANGE HERE: Changed v1beta to v1 ***
+    const apiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`;
 
     const payload = {
       contents: [{ parts: [{ text: prompt }] }],
@@ -57,7 +55,6 @@ export default async function handler(request) {
     if (!googleApiResponse.ok) {
       const errorBody = await googleApiResponse.json();
       console.error("Google API Error Response:", errorBody);
-      // Use googleApiResponse.status directly as the status for the Netlify response
       return createJsonResponse(googleApiResponse.status || 500, { error: errorBody.error?.message || 'Failed to fetch from Google API' });
     }
 
