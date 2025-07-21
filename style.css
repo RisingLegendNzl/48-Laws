@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;500;600;700&display=swap');
 
 html {
     scroll-behavior: smooth;
@@ -9,6 +9,29 @@ body {
     background-color: #111111;
     color: #E5E7EB;
 }
+
+/* Home Page Banner */
+.power-banner {
+    font-family: 'Cinzel', serif;
+    background-color: #0d2c54; /* Royal Blue */
+    color: white;
+    text-align: center;
+    padding: 2rem 1rem;
+    margin-bottom: 1rem;
+    font-size: 4rem;
+    font-weight: 700;
+    letter-spacing: 0.5rem;
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+    border-radius: 0.25rem;
+}
+
+.author-name {
+    text-align: center;
+    color: #9CA3AF;
+    margin-bottom: 2rem;
+    font-style: italic;
+}
+
 
 /* Top Navigation */
 .nav-btn {
