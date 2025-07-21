@@ -1,32 +1,39 @@
 // This is a serverless function with improved error handling.
 // File path: /api/generate.js
 
-export default async function handler(request) { // Removed 'res' parameter for explicit return
-  if (request.method !== 'POST') {
-    return {
-      statusCode: 405,
-      body: JSON.stringify({ error: 'Method Not Allowed' }),
+export default async function handler(request) {
+  // Helper function to create a Response object
+  const createJsonResponse = (statusCode, data) => {
+    return new Response(JSON.stringify(data), {
+      status: statusCode,
       headers: { 'Content-Type': 'application/json' },
-    };
+    });
+  };
+
+  if (request.method !== 'POST') {
+    return createJsonResponse(405, { error: 'Method Not Allowed' });
   }
 
   try {
-    const { prompt } = request.body;
+    // Netlify now often passes the request body directly when using 'request' object
+    // For POST requests, request.json() is often the way to get the body.
+    let requestBody;
+    try {
+      requestBody = await request.json();
+    } catch (e) {
+      // Handle cases where body might be empty or not valid JSON
+      requestBody = {};
+    }
+
+    const { prompt } = requestBody; // Use requestBody here
+
     if (!prompt) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: 'Prompt is required' }),
-        headers: { 'Content-Type': 'application/json' },
-      };
+      return createJsonResponse(400, { error: 'Prompt is required' });
     }
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: 'API key not configured on the server.' }),
-        headers: { 'Content-Type': 'application/json' },
-      };
+      return createJsonResponse(500, { error: 'API key not configured on the server.' });
     }
 
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
@@ -49,60 +56,34 @@ export default async function handler(request) { // Removed 'res' parameter for 
 
     if (!googleApiResponse.ok) {
       const errorBody = await googleApiResponse.json();
-      console.error("Google API Error Response:", errorBody); // Log the actual error from Google API
-      return {
-        statusCode: googleApiResponse.status || 500, // Use Google API status if available, else 500
-        body: JSON.stringify({ error: errorBody.error?.message || 'Failed to fetch from Google API' }),
-        headers: { 'Content-Type': 'application/json' },
-      };
+      console.error("Google API Error Response:", errorBody);
+      // Use googleApiResponse.status directly as the status for the Netlify response
+      return createJsonResponse(googleApiResponse.status || 500, { error: errorBody.error?.message || 'Failed to fetch from Google API' });
     }
 
     const result = await googleApiResponse.json();
 
-    // **NEW, IMPROVED CHECKING**
-    // First, check if the response was blocked by safety filters.
     if (!result.candidates || result.candidates.length === 0) {
       if (result.promptFeedback && result.promptFeedback.blockReason) {
         console.warn(`Request blocked by Google's safety filters. Reason: ${result.promptFeedback.blockReason}`);
-        return {
-          statusCode: 400,
-          body: JSON.stringify({ error: `The request was blocked by the API's safety filters. Please try a different prompt.` }),
-          headers: { 'Content-Type': 'application/json' },
-        };
+        return createJsonResponse(400, { error: `The request was blocked by the API's safety filters. Please try a different prompt.` });
       } else {
         console.error("API response was successful but contained no candidates.", result);
-        return {
-          statusCode: 500,
-          body: JSON.stringify({ error: 'API returned an empty or invalid response.' }),
-          headers: { 'Content-Type': 'application/json' },
-        };
+        return createJsonResponse(500, { error: 'API returned an empty or invalid response.' });
       }
     }
 
-    // If we have candidates, get the text.
     const text = result.candidates[0]?.content?.parts?.[0]?.text;
 
     if (text) {
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ text: text }),
-        headers: { 'Content-Type': 'application/json' },
-      };
+      return createJsonResponse(200, { text: text });
     } else {
       console.error("API response had candidates but no text.", result);
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: 'API returned an unexpected response structure.' }),
-        headers: { 'Content-Type': 'application/json' },
-      };
+      return createJsonResponse(500, { error: 'API returned an unexpected response structure.' });
     }
 
   } catch (error) {
     console.error("An error occurred in the serverless function:", error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message || 'An internal server error occurred.' }),
-      headers: { 'Content-Type': 'application/json' },
-    };
+    return createJsonResponse(500, { error: error.message || 'An internal server error occurred.' });
   }
 }
