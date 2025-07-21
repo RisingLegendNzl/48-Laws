@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // The API key is no longer stored here for security.
+    // This frontend code is now secure because it does not contain the API key.
+    // The key is used in the backend serverless function (api/generate.js).
     
     const laws = [
         {
@@ -314,14 +315,13 @@ document.addEventListener('DOMContentLoaded', () => {
     async function getGeminiResponse(prompt, outputElement) {
         outputElement.innerHTML = '<div class="loader"></div>';
         
-        // The URL now points to our own backend endpoint
         const apiUrl = '/api/generate';
 
         try {
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: prompt }) // Send the prompt in the request body
+                body: JSON.stringify({ prompt: prompt })
             });
 
             if (!response.ok) {
@@ -344,10 +344,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const views = {
         home: `
             <div id="home-view" class="view">
+                <div class="power-banner">POWER</div>
+                <p class="author-name">by Robert Greene</p>
                 <div class="space-y-4 text-gray-400 leading-relaxed">
-                    <p>This guide is an interactive exploration of Robert Greene's controversial and influential work, "The 48 Laws of Power."</p>
+                    <p>This guide is an interactive exploration of the controversial and influential work, "The 48 Laws of Power."</p>
                     <p>The laws are presented here not as a moral endorsement, but as a tool for understanding the dynamics of power. Use the "Laws" tab to begin.</p>
-                    <p class="font-semibold text-red-500">Warning: Many of these laws are manipulative and amoral. This guide is for educational and defensive purposes only.</p>
                 </div>
             </div>
         `,
@@ -408,7 +409,6 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.toggle('active', btn.dataset.view === viewName);
         });
 
-        // Add event listeners for the newly rendered content
         if (viewName === 'laws') {
             const lawsDropdown = document.getElementById('laws-dropdown');
             const lawContentContainer = document.getElementById('law-content-container');
