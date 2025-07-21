@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             title: "Law 14: Pose as a Friend, Work as a Spy",
-            summary: "Knowing about your rival is critical. Use spies, or be a spy yourself. In polite social encounters, learn to probe. Ask indirect questions to get people to reveal their weaknesses and intentions. There is no occasion that is not an opportunity for artful spying.",
+    summary: "Knowing about your rival is critical. Use spies, or be a spy yourself. In polite social encounters, learn to probe. Ask indirect questions to get people to reveal their weaknesses and intentions. There is no occasion that is not an opportunity for artful spying.",
             practice: "In your next social or professional gathering, pay close attention to the conversations around you. What can you learn about the goals and motivations of others? Ask open-ended questions to encourage people to share more.",
             criticism: "This law encourages deceit and a violation of privacy. Building relationships on the premise of gathering intelligence is unethical and will ultimately lead to shallow and untrustworthy connections."
         },
@@ -330,7 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let errorMessage = `Request failed with status ${response.status}`;
                 try {
                     const errorJson = JSON.parse(responseText);
-                    errorMessage = errorJson.error || errorMessage;
+                    errorMessage = errorJson.error?.message || errorMessage;
                 } catch (e) {
                     errorMessage = responseText || errorMessage;
                 }
@@ -374,7 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 <div class="interplay-section mt-12 p-6 border border-gray-700 rounded-md bg-gray-900">
                     <h2 class="text-xl font-bold text-white mb-4">Law Interplay Analysis</h2>
-                    <p class="text-gray-400 mb-4">Select two or three laws to see how they might interact, complement, or contradict each other in practice.</p>
+                    <p class="text-gray-400 mb-4">Select two or three laws (hold Ctrl/Cmd to select multiple) to see how they might interact, complement, or contradict each other in practice.</p>
                     <select id="interplay-laws-dropdown" multiple class="w-full p-3 border text-lg mb-4 h-40">
                         ${laws.map((law, index) => `<option value="${index}">Law ${index + 1}: ${law.title.split(': ')[1]}</option>`).join('')}
                     </select>
@@ -447,9 +447,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (viewName === 'laws') {
             const lawsDropdown = document.getElementById('laws-dropdown');
             const lawContentContainer = document.getElementById('law-content-container');
-            const interplayLawsDropdown = document.getElementById('interplay-laws-dropdown'); // For new feature
-            const analyzeInterplayBtn = document.getElementById('analyze-interplay-btn'); // For new feature
-            const interplayOutput = document.getElementById('interplay-output'); // For new feature
+            const interplayLawsDropdown = document.getElementById('interplay-laws-dropdown'); // Reverted to dropdown
+            const analyzeInterplayBtn = document.getElementById('analyze-interplay-btn');
+            const interplayOutput = document.getElementById('interplay-output');
 
 
             lawsDropdown.addEventListener('change', (e) => {
