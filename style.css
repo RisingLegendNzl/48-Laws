@@ -70,6 +70,17 @@ main.laws-active, main.videos-active {
     padding: 1.5rem;
 }
 
+/* Custom color variable for Power Gold */
+:root {
+    --color-power-gold: #e8b923;
+}
+
+/* Custom Tailwind-like class for button background */
+.bg-power-gold {
+    background-color: var(--color-power-gold);
+}
+
+
 /* Laws Dropdown (single select) */
 #laws-dropdown {
     background-color: #1a1a1a;
