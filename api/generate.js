@@ -1,64 +1,78 @@
-// This is a serverless function (e.g., for Vercel or Netlify).
-// It must be placed in a folder named 'api' in your project root.
+// This is a serverless function with added debugging logs.
 // File path: /api/generate.js
 
 export default async function handler(request, response) {
-  // 1. Check for the correct request method
+  // Log 1: Check if the function was triggered
+  console.log(`Function invoked. Request method: ${request.method}`);
+
   if (request.method !== 'POST') {
     return response.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  // 2. Get the prompt from the request body
-  const { prompt } = request.body;
-  if (!prompt) {
-    return response.status(400).json({ error: 'Prompt is required' });
-  }
-
-  // 3. Get the secret API key from environment variables
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    return response.status(500).json({ error: 'API key not configured on the server' });
-  }
-
-  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
-
-  // 4. Set up the payload for the Google Gemini API
-  const payload = {
-    contents: [{ parts: [{ text: prompt }] }],
-    safetySettings: [
-      { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
-      { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
-      { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
-      { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
-    ],
-  };
-
   try {
-    // 5. Make the fetch request to the actual Google API
+    const { prompt } = request.body;
+    
+    // Log 2: Check if the prompt was received from the frontend
+    console.log(`Received prompt: "${prompt}"`);
+    if (!prompt) {
+      console.error("Error: Prompt is missing from the request body.");
+      return response.status(400).json({ error: 'Prompt is required' });
+    }
+
+    const apiKey = process.env.GEMINI_API_KEY;
+
+    // Log 3: Check if the API key is accessible on the server
+    if (apiKey) {
+      console.log("Successfully loaded GEMINI_API_KEY from environment variables.");
+    } else {
+      console.error("CRITICAL ERROR: GEMINI_API_KEY is not defined in the server environment!");
+      return response.status(500).json({ error: 'API key not configured on the server.' });
+    }
+
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
+
+    const payload = {
+      contents: [{ parts: [{ text: prompt }] }],
+      safetySettings: [
+        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+      ],
+    };
+
+    // Log 4: About to make the external API call
+    console.log("Making fetch request to Google Gemini API...");
     const googleApiResponse = await fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
 
+    // Log 5: Log the response status from Google
+    console.log(`Google API response status: ${googleApiResponse.status}`);
+
     if (!googleApiResponse.ok) {
       const errorBody = await googleApiResponse.json();
-      console.error('Google API Error:', errorBody);
-      return response.status(googleApiResponse.status).json({ error: errorBody.error.message });
+      console.error('Google API Error Response:', errorBody);
+      throw new Error(errorBody.error.message || 'Failed to fetch from Google API');
     }
 
     const result = await googleApiResponse.json();
-
-    // 6. Send the successful response back to the frontend
     const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
     if (text) {
+      // Log 6: Successfully got text, sending it back to frontend
+      console.log("Successfully received text from API. Sending response to client.");
       return response.status(200).json({ text: text });
     } else {
-      return response.status(500).json({ error: 'API returned an unexpected response structure.' });
+      console.error("API response was successful but contained no text.", result);
+      return response.status(500).json({ error: 'API returned an empty or invalid response.' });
     }
 
   } catch (error) {
-    console.error('Internal Server Error:', error);
-    return response.status(500).json({ error: 'An internal server error occurred.' });
+    // Log 7: Catch any errors that occurred during the process
+    console.error("An error occurred in the serverless function:", error);
+    return response.status(500).json({ error: error.message });
   }
 }
