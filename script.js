@@ -348,13 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <h1>POWER</h1>
                     <p class="author-name">by Robert Greene</p>
                 </div>
-                <div class="view-padding">
-                    <div class="space-y-4 text-gray-300 leading-relaxed">
-                        <p>This guide is an interactive exploration of the controversial and influential work, "The 48 Laws of Power."</p>
-                        <p>The laws are presented here not as a moral endorsement, but as a tool for understanding the dynamics of power. Use the "Laws" tab to begin.</p>
-                    </div>
                 </div>
-            </div>
         `,
         laws: `
             <div id="laws-view" class="view view-padding">
