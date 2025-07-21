@@ -324,12 +324,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ prompt: prompt })
             });
 
+            // **NEW** Get the response text first to handle all cases
+            const responseText = await response.text();
+
             if (!response.ok) {
-                const errorResult = await response.json();
-                throw new Error(errorResult.error || `Request failed with status ${response.status}`);
+                // Try to parse the text as JSON, but have a fallback
+                let errorMessage = `Request failed with status ${response.status}`;
+                try {
+                    const errorJson = JSON.parse(responseText);
+                    errorMessage = errorJson.error || errorMessage;
+                } catch (e) {
+                    // The error response wasn't JSON, just show the text
+                    errorMessage = responseText || errorMessage;
+                }
+                throw new Error(errorMessage);
             }
 
-            const result = await response.json();
+            // If the response is OK, but the text is empty, it's an issue.
+            if (!responseText) {
+                throw new Error("The server returned an empty response. This may be due to a timeout or safety filter.");
+            }
+
+            const result = JSON.parse(responseText);
             const text = result.text.replace(/\n/g, '<br>');
             outputElement.innerHTML = `<p class="text-gray-300 leading-relaxed">${text}</p>`;
 
@@ -349,7 +365,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p class="author-name">by Robert Greene</p>
                 </div>
                 <div class="home-content-area">
-                    </div>
+                    <!-- This area is red below the banner -->
+                </div>
             </div>
         `,
         laws: `
