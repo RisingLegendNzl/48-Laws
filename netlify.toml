@@ -5,6 +5,8 @@
 # This tells Netlify where your serverless functions are.
 [functions]
   directory = "api/"
+  # Add the following line to increase the function timeout to 26 seconds (26000 ms)
+  timeout = 26
 
 # This is the new, important rule.
 # It tells Netlify how to route requests to your function.
