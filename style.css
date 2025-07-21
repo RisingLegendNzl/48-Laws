@@ -70,14 +70,12 @@ main.laws-active, main.videos-active {
     padding: 1.5rem;
 }
 
-/* Laws Dropdown & Input field */
-#laws-dropdown,
-#interplay-laws-dropdown { /* Both dropdowns */
+/* Laws Dropdown (single select) */
+#laws-dropdown {
     background-color: #1a1a1a;
     border-color: #4B5563;
     color: #F3F4F6;
-    /* Keep appearance: none and background-image for the SINGLE select dropdown only */
-    -webkit-appearance: none; 
+    -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
@@ -87,15 +85,19 @@ main.laws-active, main.videos-active {
     border-radius: 0;
 }
 
-/* Multi-select specific adjustments to allow native behavior */
+/* Multi-select dropdown specific adjustments to allow native behavior */
 #interplay-laws-dropdown {
+    background-color: #1a1a1a; /* Match other inputs */
+    border-color: #4B5563; /* Match other inputs */
+    color: #F3F4F6; /* Match other inputs */
     height: auto; /* Adjust height based on content */
     min-height: 100px; /* Minimum height to make it scrollable */
-    /* REMOVE custom appearance/background for multi-select to allow native UI */
-    -webkit-appearance: auto; /* Revert to default appearance for multi-select */
-    -moz-appearance: auto;
-    appearance: auto;
-    background-image: none; /* Remove background image for multi-select */
+    /* Crucially, we REMOVE custom appearance/background for multi-select to allow native UI */
+    -webkit-appearance: menulist; /* Explicitly use native UI for webkit */
+    -moz-appearance: menulist; /* Explicitly use native UI for mozilla */
+    appearance: menulist; /* Explicitly use native UI */
+    background-image: none; /* Ensure no custom arrow interferes */
+    border-radius: 0; /* Keep consistent border radius */
 }
 
 
