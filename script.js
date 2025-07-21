@@ -362,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="text-center py-8">
                     <a href="https://amzn.to/3UmR0qd" target="_blank" rel="noopener noreferrer" 
-                       class="inline-block bg-yellow-500 text-blue-900 font-bold py-3 px-6 rounded-lg hover:bg-yellow-600 transition-colors text-lg mt-8">
+                       class="inline-block bg-power-gold text-gray-900 font-bold py-3 px-6 rounded-lg hover:bg-yellow-600 transition-colors text-lg mt-8">
                         Buy on Amazon
                     </a>
                     <p class="text-gray-400 text-sm mt-3">As an Amazon Associate, I earn from qualifying purchases.</p>
@@ -377,7 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </select>
                 <div id="law-content-container"></div>
 
-                <div class="interplay-section mt-12 p-6 border border-gray-700 rounded-md bg-gray-900">
+                <div class="interplay-section mt-12 p-6 rounded-md bg-gray-900 border-power-gold border">
                     <h2 class="text-xl font-bold text-white mb-4">Law Interplay Analysis</h2>
                     <p class="text-gray-400 mb-4">Select two or three laws (hold Ctrl/Cmd to select multiple) to see how they might interact, complement, or contradict each other in practice.</p>
                     <select id="interplay-laws-dropdown" multiple class="w-full p-3 border text-lg mb-4 h-40">
