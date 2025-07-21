@@ -81,11 +81,18 @@ main.laws-active, main.videos-active {
 }
 
 
-/* Laws Dropdown (single select) */
-#laws-dropdown {
+/* Laws Dropdown (single select) and Interplay Dropdown (multi-select) */
+#laws-dropdown,
+#interplay-laws-dropdown {
     background-color: #1a1a1a;
-    border-color: #4B5563;
-    color: #F3F4F6;
+    border-color: #4B5563; /* Tailwind gray-600 */
+    color: #F3F4F6; /* Tailwind gray-100 */
+    border-radius: 0.375rem; /* Added: rounded-md equivalent for a cleaner look */
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Added transition for smooth effects */
+}
+
+/* Specific appearance for single select */
+#laws-dropdown {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -93,24 +100,29 @@ main.laws-active, main.videos-active {
     background-position: right 0.5rem center;
     background-repeat: no-repeat;
     background-size: 1.5em 1.5em;
-    border-radius: 0;
 }
 
-/* Multi-select dropdown specific adjustments to allow native behavior */
+/* Specific appearance for multi-select */
 #interplay-laws-dropdown {
-    background-color: #1a1a1a; /* Match other inputs */
-    border-color: #4B5563; /* Match other inputs */
-    color: #F3F4F6; /* Match other inputs */
-    height: auto; /* Adjust height based on content */
-    min-height: 100px; /* Minimum height to make it scrollable */
-    /* Crucially, we REMOVE custom appearance/background for multi-select to allow native UI */
+    height: auto;
+    min-height: 100px;
     -webkit-appearance: menulist; /* Explicitly use native UI for webkit */
     -moz-appearance: menulist; /* Explicitly use native UI for mozilla */
     appearance: menulist; /* Explicitly use native UI */
     background-image: none; /* Ensure no custom arrow interferes */
-    border-radius: 0; /* Keep consistent border radius */
 }
 
+/* Hover/Focus states for both dropdowns */
+#laws-dropdown:hover,
+#interplay-laws-dropdown:hover {
+    border-color: #6B7280; /* Slightly lighter gray on hover */
+}
+#laws-dropdown:focus,
+#interplay-laws-dropdown:focus {
+    outline: none;
+    border-color: var(--color-power-gold); /* Gold border on focus */
+    box-shadow: 0 0 0 2px rgba(232, 185, 35, 0.5); /* Subtle gold glow on focus */
+}
 
 /* Subsection titles */
 .subsection-title {
@@ -159,4 +171,6 @@ main.laws-active, main.videos-active {
 /* Interplay section specific styles */
 .interplay-section {
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border: 1px solid var(--color-power-gold); /* Border color remains gold */
+    border-radius: 0.5rem; /* Slightly rounded corners for the section container */
 }
