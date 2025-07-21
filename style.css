@@ -81,36 +81,38 @@ main.laws-active, main.videos-active {
 }
 
 
-/* Laws Dropdown (single select) and Interplay Dropdown (multi-select) */
-#laws-dropdown,
-#interplay-laws-dropdown {
+/* Laws Dropdown (single select) */
+#laws-dropdown {
     background-color: #1a1a1a;
     border-color: #4B5563; /* Tailwind gray-600 */
     color: #F3F4F6; /* Tailwind gray-100 */
     border-radius: 0.375rem; /* Added: rounded-md equivalent for a cleaner look */
     transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Added transition for smooth effects */
-}
-
-/* Specific appearance for single select */
-#laws-dropdown {
+    /* Custom appearance properties */
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    /* Updated: Change stroke color of SVG arrow to power-gold */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23e8b923' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
     background-position: right 0.5rem center;
     background-repeat: no-repeat;
     background-size: 1.5em 1.5em;
 }
 
-/* Specific appearance for multi-select */
+/* Multi-select dropdown specific adjustments to allow native behavior */
 #interplay-laws-dropdown {
+    background-color: #1a1a1a; /* Match other inputs */
+    border-color: #4B5563; /* Match other inputs */
+    color: #F3F4F6; /* Match other inputs */
     height: auto;
     min-height: 100px;
     -webkit-appearance: menulist; /* Explicitly use native UI for webkit */
     -moz-appearance: menulist; /* Explicitly use native UI for mozilla */
     appearance: menulist; /* Explicitly use native UI */
     background-image: none; /* Ensure no custom arrow interferes */
+    border-radius: 0.375rem; /* Consistent border radius */
 }
+
 
 /* Hover/Focus states for both dropdowns */
 #laws-dropdown:hover,
