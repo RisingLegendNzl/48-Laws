@@ -5,7 +5,6 @@
 # This tells Netlify where your serverless functions are.
 [functions]
   directory = "api/"
-  timeout = 26 # This is in seconds. Netlify converts to milliseconds internally.
 
 # This is the new, important rule.
 # It tells Netlify how to route requests to your function.
