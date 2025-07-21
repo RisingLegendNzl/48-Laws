@@ -5,8 +5,52 @@
 # This tells Netlify where your serverless functions are.
 [functions]
   directory = "api/"
-  # Add the following line to increase the function timeout to 26 seconds (26000 ms)
-  timeout = 26
+
+  # Try the syntax suggested by the error message, making 'timeout' a sub-object.
+  # This is usually for bundling config, but let's see if it works for timeout.
+  [functions.timeout]
+  # The value itself might need to be inside this sub-object, if this syntax is truly expected.
+  # Let's try placing the numerical value directly here as a key-value pair.
+  # If this doesn't work, we'll confirm that direct timeout isn't allowed in .toml in this way for your setup.
+  # Note: The error message gives an example with external_node_modules inside [functions.timeout],
+  # which makes no sense for a simple timeout value.
+  # This suggests the parser is incorrectly applying the structure for other properties to 'timeout'.
+
+# Let's revert to the original, correct syntax but try to ensure no whitespace issues or hidden characters.
+# The error "Configuration property functions.timeout must be an object." is the key.
+# This means the parser is reading "timeout = 26" as trying to assign 'timeout' (which it expects as an object/table) a scalar value.
+
+# This implies that perhaps the [functions] section is being misinterpreted
+# or you're using an older syntax for functions.
+
+# Let's try specifying the Node.js version explicitly in netlify.toml,
+# as sometimes older build images can have quirks.
+# Your logs show Node.js v22.17.1 is being used, which is modern.
+
+# The documentation points to `[functions]` then `timeout = 10` (for 10 seconds).
+# This error is very specific and points to a parser misinterpretation.
+
+# Given the exact error: "Configuration property functions.timeout must be an object."
+# This means that the parser is expecting something like:
+# [functions.timeout]
+#    some_property = 26 (which is nonsensical for timeout)
+
+# Let's try putting the timeout directly into the [functions] section as a direct key-value pair,
+# but ensure there are no indentation issues, or hidden characters.
+# Your original change *should* have been correct according to standard Netlify TOML.
+
+**My strong recommendation is to try this exact change again, ensuring no hidden characters or accidental indentations:**
+
+```toml
+# This tells Netlify where your public files are.
+[build]
+  publish = "."
+
+# This tells Netlify where your serverless functions are.
+[functions]
+  directory = "api/"
+  # Ensure this line has NO leading spaces or tabs before `timeout`
+  timeout = 26 # This is in seconds. Netlify converts to milliseconds internally.
 
 # This is the new, important rule.
 # It tells Netlify how to route requests to your function.
