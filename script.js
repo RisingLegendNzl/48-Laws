@@ -344,16 +344,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const views = {
         home: `
             <div id="home-view" class="view">
-                <div class="power-banner">POWER</div>
-                <p class="author-name">by Robert Greene</p>
-                <div class="space-y-4 text-gray-400 leading-relaxed">
-                    <p>This guide is an interactive exploration of the controversial and influential work, "The 48 Laws of Power."</p>
-                    <p>The laws are presented here not as a moral endorsement, but as a tool for understanding the dynamics of power. Use the "Laws" tab to begin.</p>
+                <div class="power-banner">
+                    <h1>POWER</h1>
+                    <p class="author-name">by Robert Greene</p>
+                </div>
+                <div class="view-padding">
+                    <div class="space-y-4 text-gray-300 leading-relaxed">
+                        <p>This guide is an interactive exploration of the controversial and influential work, "The 48 Laws of Power."</p>
+                        <p>The laws are presented here not as a moral endorsement, but as a tool for understanding the dynamics of power. Use the "Laws" tab to begin.</p>
+                    </div>
                 </div>
             </div>
         `,
         laws: `
-            <div id="laws-view" class="view">
+            <div id="laws-view" class="view view-padding">
                 <select id="laws-dropdown" class="w-full p-3 rounded-md border text-lg mb-8">
                     <option value="">-- Choose a Law --</option>
                     ${laws.map((law, index) => `<option value="${index}">Law ${index + 1}: ${law.title.split(': ')[1]}</option>`).join('')}
@@ -362,8 +366,8 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `,
         videos: `
-            <div id="videos-view" class="view">
-                <div class="text-center text-gray-500">
+            <div id="videos-view" class="view view-padding">
+                <div class="text-center text-gray-400">
                     <p>Video content coming soon.</p>
                 </div>
             </div>
@@ -376,15 +380,15 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="space-y-8">
                 <div>
                     <h3 class="subsection-title">The Law</h3>
-                    <p class="text-gray-400 leading-relaxed">${law.summary}</p>
+                    <p class="text-gray-300 leading-relaxed">${law.summary}</p>
                 </div>
                 <div>
                     <h3 class="subsection-title">Keys to Practice</h3>
-                    <p class="text-gray-400 leading-relaxed">${law.practice}</p>
+                    <p class="text-gray-300 leading-relaxed">${law.practice}</p>
                 </div>
                 <div>
                     <h3 class="subsection-title">The Reversal</h3>
-                    <p class="text-gray-400 leading-relaxed">${law.criticism}</p>
+                    <p class="text-gray-300 leading-relaxed">${law.criticism}</p>
                 </div>
                 <div class="space-y-6 pt-4">
                     <div>
