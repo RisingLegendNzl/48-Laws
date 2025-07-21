@@ -1,14 +1,39 @@
-// This is a serverless function with improved error handling.
+// This is a temporary diagnostic version of generate.js
 // File path: /api/generate.js
 
 export default async function handler(request) {
-  // Helper function to create a Response object
   const createJsonResponse = (statusCode, data) => {
     return new Response(JSON.stringify(data), {
       status: statusCode,
       headers: { 'Content-Type': 'application/json' },
     });
   };
+
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    return createJsonResponse(500, { error: 'API key not configured on the server.' });
+  }
+
+  // --- TEMPORARY DIAGNOSTIC CODE ---
+  // This will try to list available models for your API key
+  const listModelsUrl = `https://generativelanguage.googleapis.com/v1/models?key=${apiKey}`;
+  try {
+    console.log("Attempting to list models from:", listModelsUrl);
+    const listModelsResponse = await fetch(listModelsUrl);
+    const listModelsData = await listModelsResponse.json();
+    console.log("List Models API Response:", JSON.stringify(listModelsData, null, 2));
+
+    // You can iterate through listModelsData.models to see available models
+    // For example:
+    // listModelsData.models?.forEach(model => {
+    //   console.log(`Available Model: ${model.name}, Supported Methods: ${model.supportedGenerationMethods}`);
+    // });
+
+  } catch (listError) {
+    console.error("Error calling ListModels API:", listError);
+  }
+  // --- END TEMPORARY DIAGNOSTIC CODE ---
+
 
   if (request.method !== 'POST') {
     return createJsonResponse(405, { error: 'Method Not Allowed' });
@@ -28,12 +53,7 @@ export default async function handler(request) {
       return createJsonResponse(400, { error: 'Prompt is required' });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      return createJsonResponse(500, { error: 'API key not configured on the server.' });
-    }
-
-    // *** CHANGE HERE: Changed v1beta to v1 ***
+    // This line will still fail if the model isn't listed by ListModels
     const apiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`;
 
     const payload = {
@@ -54,7 +74,7 @@ export default async function handler(request) {
 
     if (!googleApiResponse.ok) {
       const errorBody = await googleApiResponse.json();
-      console.error("Google API Error Response:", errorBody);
+      console.error("Google API Error Response from generateContent call:", errorBody);
       return createJsonResponse(googleApiResponse.status || 500, { error: errorBody.error?.message || 'Failed to fetch from Google API' });
     }
 
