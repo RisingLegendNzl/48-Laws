@@ -33,10 +33,8 @@ export default async function handler(request) {
       return createJsonResponse(500, { error: 'API key not configured on the server.' });
     }
 
-    // *** CRITICAL CHANGE: Using an available model from your ListModels output ***
-    // 'models/gemini-2.5-pro' is a good, capable text model from your list.
-    // Other good options from your list: 'models/gemini-1.5-pro-002', 'models/gemini-1.5-flash', etc.
-    const apiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-pro:generateContent?key=${apiKey}`;
+    // *** CRITICAL CHANGE: Changing to models/gemini-2.5-flash for potentially faster responses ***
+    const apiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     const payload = {
       contents: [{ parts: [{ text: prompt }] }],
