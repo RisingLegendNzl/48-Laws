@@ -6,10 +6,6 @@
 [functions]
   directory = "api/"
 
-  # Try to define a default timeout for all functions
-  [functions.params]
-    timeout = 26 # In seconds
-
 # This is the new, important rule.
 # It tells Netlify how to route requests to your function.
 [[redirects]]
