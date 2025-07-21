@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             title: "Law 14: Pose as a Friend, Work as a Spy",
-            summary: "Knowing about your rival is critical. Use spies, or be a spy yourself. In polite social encounters, learn to probe. Ask indirect questions to get people to reveal their weaknesses and intentions. There is no occasion that is not an opportunity for artful spying.",
+            summary: "Knowing about your rival is critical. Use spies, or be a spy yourself. In polite social encounters, learn to probe. Ask indirect questions to get people to reveal their weaknesses and intentions. There is no occasion that is not an an opportunity for artful spying.",
             practice: "In your next social or professional gathering, pay close attention to the conversations around you. What can you learn about the goals and motivations of others? Ask open-ended questions to encourage people to share more.",
             criticism: "This law encourages deceit and a violation of privacy. Building relationships on the premise of gathering intelligence is unethical and will ultimately lead to shallow and untrustworthy connections."
         },
@@ -365,7 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
                        class="inline-block bg-power-gold text-gray-900 font-bold py-3 px-6 rounded-lg hover:bg-yellow-600 transition-colors text-lg mt-8">
                         Buy on Amazon
                     </a>
-                    <p class="text-gray-400 text-sm mt-3">As an Amazon Associate, I earn from qualifying purchases.</p>
+                    <p class="text-gray-400 text-xs mt-3">As an Amazon Associate, I earn from qualifying purchases.</p>
                 </div>
             </div>
         `,
