@@ -6,9 +6,18 @@ html {
 
 body {
     font-family: 'Inter', sans-serif;
-    /* The new red background color from the book cover */
-    background-color: #9a1a1a; 
+    background-color: #111111; 
     color: #E5E7EB;
+}
+
+/* Red background for the title bar */
+#title-bar {
+    background-color: #9a1a1a;
+}
+
+/* Red background for the main content area for ALL views */
+main {
+    background-color: #9a1a1a;
 }
 
 /* Home Page Banner */
@@ -17,8 +26,7 @@ body {
     background-color: #0d2c54; /* Royal Blue */
     color: #e8b923; /* Gold color from cover */
     text-align: center;
-    padding: 2.5rem 1rem; /* Increased padding for author name */
-    /* No horizontal margin or padding so it's full-width */
+    padding: 2.5rem 1rem;
 }
 
 .power-banner h1 {
@@ -33,11 +41,10 @@ body {
     color: #e8b923; /* Gold color from cover */
     margin-top: 1rem;
     font-size: 1rem;
-    font-family: 'Inter', sans-serif; /* Use standard font for author */
+    font-family: 'Inter', sans-serif;
     font-style: italic;
     opacity: 0.9;
 }
-
 
 /* Top Navigation */
 .nav-btn {
@@ -53,7 +60,7 @@ body {
     border-bottom-color: #DC2626;
 }
 
-/* View container now has padding applied in JS */
+/* Padding for views that need it */
 .view-padding {
     padding: 1.5rem;
 }
@@ -93,7 +100,7 @@ body {
     border-color: #6B7280;
 }
 .gemini-output {
-    background-color: rgba(0, 0, 0, 0.2); /* Darker background for red */
+    background-color: rgba(0, 0, 0, 0.2);
     border-left: 3px solid #DC2626;
     padding: 1rem;
     margin-top: 0.75rem;
