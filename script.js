@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
             practice: "In your next conversation or meeting, make a conscious effort to speak less and listen more. When you do speak, be concise. Notice how people react to your brevity.",
             criticism: "Silence can be misinterpreted as arrogance, disinterest, or a lack of intelligence. Effective communication often requires clarity and providing enough information for others to understand your position. Saying too little can lead to misunderstandings."
         },
-        {
+            {
             title: "Law 5: So Much Depends on Reputation – Guard it with your Life",
             summary: "Reputation is the cornerstone of power. Through reputation alone you can intimidate and win; once it slips, however, you are vulnerable, and will be attacked on all sides. Make your reputation unassailable.",
             practice: "Identify the key qualities you want to be known for in your professional life (e.g., reliable, creative, decisive). For the next week, make sure all your actions reinforce this reputation. Also, be aware of any potential threats to it.",
@@ -324,23 +324,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ prompt: prompt })
             });
 
-            // **NEW** Get the response text first to handle all cases
             const responseText = await response.text();
 
             if (!response.ok) {
-                // Try to parse the text as JSON, but have a fallback
                 let errorMessage = `Request failed with status ${response.status}`;
                 try {
                     const errorJson = JSON.parse(responseText);
                     errorMessage = errorJson.error || errorMessage;
                 } catch (e) {
-                    // The error response wasn't JSON, just show the text
                     errorMessage = responseText || errorMessage;
                 }
                 throw new Error(errorMessage);
             }
 
-            // If the response is OK, but the text is empty, it's an issue.
             if (!responseText) {
                 throw new Error("The server returned an empty response. This may be due to a timeout or safety filter.");
             }
@@ -365,8 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p class="author-name">by Robert Greene</p>
                 </div>
                 <div class="home-content-area">
-                    <!-- This area is red below the banner -->
-                </div>
+                    </div>
             </div>
         `,
         laws: `
@@ -376,6 +371,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${laws.map((law, index) => `<option value="${index}">Law ${index + 1}: ${law.title.split(': ')[1]}</option>`).join('')}
                 </select>
                 <div id="law-content-container"></div>
+
+                <div class="interplay-section mt-12 p-6 border border-gray-700 rounded-md bg-gray-900">
+                    <h2 class="text-xl font-bold text-white mb-4">Law Interplay Analysis</h2>
+                    <p class="text-gray-400 mb-4">Select two or three laws to see how they might interact, complement, or contradict each other in practice.</p>
+                    <select id="interplay-laws-dropdown" multiple class="w-full p-3 border text-lg mb-4 h-40">
+                        ${laws.map((law, index) => `<option value="${index}">Law ${index + 1}: ${law.title.split(': ')[1]}</option>`).join('')}
+                    </select>
+                    <button id="analyze-interplay-btn" class="gemini-btn w-full sm:w-auto px-4 py-2 rounded-md">✨ Analyze Interplay</button>
+                    <div id="interplay-output" class="gemini-output mt-3"></div>
+                </div>
             </div>
         `,
         videos: `
@@ -409,8 +414,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="gemini-output scenario-output mt-3"></div>
                     </div>
                     <div>
-                        <button class="gemini-btn counter-btn w-full sm:w-auto px-4 py-2 rounded-md" data-law-title="${law.title}">✨ Generate Counter-Argument</button>
+                        <button class="gemini-btn apply-law-btn w-full sm:w-auto px-4 py-2 rounded-md" data-law-title="${law.title}">💡 Apply This Law</button>
+                        <div class="gemini-output apply-law-output mt-3"></div>
+                    </div>
+                    <div>
+                        <button class="gemini-btn counter-btn w-full sm:w-auto px-4 py-2 rounded-md" data-law-title="${law.title}">🛡️ Generate Counter-Argument</button>
                         <div class="gemini-output counter-output mt-3"></div>
+                    </div>
+                    <div>
+                        <button class="gemini-btn ethical-dilemma-btn w-full sm:w-auto px-4 py-2 rounded-md" data-law-title="${law.title}">⚠️ Ethical Dilemma</button>
+                        <div class="gemini-output ethical-dilemma-output mt-3"></div>
                     </div>
                 </div>
             </div>
@@ -434,6 +447,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (viewName === 'laws') {
             const lawsDropdown = document.getElementById('laws-dropdown');
             const lawContentContainer = document.getElementById('law-content-container');
+            const interplayLawsDropdown = document.getElementById('interplay-laws-dropdown'); // For new feature
+            const analyzeInterplayBtn = document.getElementById('analyze-interplay-btn'); // For new feature
+            const interplayOutput = document.getElementById('interplay-output'); // For new feature
+
 
             lawsDropdown.addEventListener('change', (e) => {
                 const selectedIndex = e.target.value;
@@ -444,15 +461,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
+            // Event listener for the new Law Interplay button
+            analyzeInterplayBtn.addEventListener('click', () => {
+                const selectedOptions = Array.from(interplayLawsDropdown.selectedOptions)
+                                            .map(option => laws[parseInt(option.value, 10)].title);
+
+                if (selectedOptions.length < 2 || selectedOptions.length > 3) {
+                    showModal("Please select 2 or 3 laws for Interplay Analysis.");
+                    interplayOutput.innerHTML = ''; // Clear previous output
+                    return;
+                }
+
+                const prompt = `Analyze how the following laws from 'The 48 Laws of Power' interact, complement, or contradict each other in a modern context (e.g., business, social, political). Provide a concise explanation for their combined effect and potential pitfalls:\n\n${selectedOptions.join('\n')}`;
+                getGeminiResponse(prompt, interplayOutput);
+            });
+
+
             lawContentContainer.addEventListener('click', (e) => {
                 const button = e.target.closest('.gemini-btn');
                 if (!button) return;
 
                 const lawTitle = button.dataset.lawTitle;
                 const outputElement = button.nextElementSibling;
-                const prompt = button.classList.contains('scenario-btn')
-                    ? `Generate a short, modern-day scenario (e.g., in an office, social media, or business context) that clearly illustrates "${lawTitle}" in action. Keep it concise and to the point.`
-                    : `Provide a strong ethical or practical counter-argument against "${lawTitle}". Alternatively, describe a concise scenario where applying this law would likely backfire.`;
+                let prompt = '';
+
+                if (button.classList.contains('scenario-btn')) {
+                    prompt = `Generate a short, modern-day scenario (e.g., in an office, social media, or business context) that clearly illustrates "${lawTitle}" in action. Keep it concise and to the point.`;
+                } else if (button.classList.contains('apply-law-btn')) {
+                    prompt = `Present a modern-day scenario where the user needs to apply "${lawTitle}". The scenario should end with a question asking the user how they would apply this law or which specific action they would take based on it.`;
+                }
+                else if (button.classList.contains('counter-btn')) {
+                    prompt = `Provide a strong ethical or practical counter-argument against "${lawTitle}". Alternatively, describe a concise scenario where applying this law would likely backfire.`;
+                } else if (button.classList.contains('ethical-dilemma-btn')) {
+                    prompt = `Describe a detailed ethical dilemma or a situation where applying "${lawTitle}" rigidly leads to significant negative long-term consequences or moral compromises. Focus on the unintended, detrimental effects.`;
+                }
                 
                 getGeminiResponse(prompt, outputElement);
             });
