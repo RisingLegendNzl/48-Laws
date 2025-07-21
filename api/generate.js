@@ -1,31 +1,19 @@
-// This is a serverless function with added debugging logs.
+// This is a serverless function with improved error handling.
 // File path: /api/generate.js
 
 export default async function handler(request, response) {
-  // Log 1: Check if the function was triggered
-  console.log(`Function invoked. Request method: ${request.method}`);
-
   if (request.method !== 'POST') {
     return response.status(405).json({ error: 'Method Not Allowed' });
   }
 
   try {
     const { prompt } = request.body;
-    
-    // Log 2: Check if the prompt was received from the frontend
-    console.log(`Received prompt: "${prompt}"`);
     if (!prompt) {
-      console.error("Error: Prompt is missing from the request body.");
       return response.status(400).json({ error: 'Prompt is required' });
     }
 
     const apiKey = process.env.GEMINI_API_KEY;
-
-    // Log 3: Check if the API key is accessible on the server
-    if (apiKey) {
-      console.log("Successfully loaded GEMINI_API_KEY from environment variables.");
-    } else {
-      console.error("CRITICAL ERROR: GEMINI_API_KEY is not defined in the server environment!");
+    if (!apiKey) {
       return response.status(500).json({ error: 'API key not configured on the server.' });
     }
 
@@ -41,38 +29,43 @@ export default async function handler(request, response) {
       ],
     };
 
-    // Log 4: About to make the external API call
-    console.log("Making fetch request to Google Gemini API...");
     const googleApiResponse = await fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
 
-    // Log 5: Log the response status from Google
-    console.log(`Google API response status: ${googleApiResponse.status}`);
-
     if (!googleApiResponse.ok) {
       const errorBody = await googleApiResponse.json();
-      console.error('Google API Error Response:', errorBody);
       throw new Error(errorBody.error.message || 'Failed to fetch from Google API');
     }
 
     const result = await googleApiResponse.json();
-    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    // **NEW, IMPROVED CHECKING**
+    // First, check if the response was blocked by safety filters.
+    if (!result.candidates || result.candidates.length === 0) {
+      if (result.promptFeedback && result.promptFeedback.blockReason) {
+        console.warn(`Request blocked by Google's safety filters. Reason: ${result.promptFeedback.blockReason}`);
+        return response.status(400).json({ error: `The request was blocked by the API's safety filters. Please try a different prompt.` });
+      } else {
+        console.error("API response was successful but contained no candidates.", result);
+        return response.status(500).json({ error: 'API returned an empty or invalid response.' });
+      }
+    }
+
+    // If we have candidates, get the text.
+    const text = result.candidates[0]?.content?.parts?.[0]?.text;
 
     if (text) {
-      // Log 6: Successfully got text, sending it back to frontend
-      console.log("Successfully received text from API. Sending response to client.");
       return response.status(200).json({ text: text });
     } else {
-      console.error("API response was successful but contained no text.", result);
-      return response.status(500).json({ error: 'API returned an empty or invalid response.' });
+      console.error("API response had candidates but no text.", result);
+      return response.status(500).json({ error: 'API returned an unexpected response structure.' });
     }
 
   } catch (error) {
-    // Log 7: Catch any errors that occurred during the process
     console.error("An error occurred in the serverless function:", error);
-    return response.status(500).json({ error: error.message });
+    return response.status(500).json({ error: error.message || 'An internal server error occurred.' });
   }
 }
