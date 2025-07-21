@@ -71,8 +71,9 @@ main.laws-active, main.videos-active {
 }
 
 /* Laws Dropdown */
-#laws-dropdown {
-    background-color: #1a1a1a; /* Changed to match header */
+#laws-dropdown,
+#interplay-laws-dropdown { /* Added for new multi-select */
+    background-color: #1a1a1a;
     border-color: #4B5563;
     color: #F3F4F6;
     -webkit-appearance: none;
@@ -82,8 +83,16 @@ main.laws-active, main.videos-active {
     background-position: right 0.5rem center;
     background-repeat: no-repeat;
     background-size: 1.5em 1.5em;
-    border-radius: 0; /* Added for boxed look */
+    border-radius: 0;
 }
+
+/* Styling for multi-select specific properties */
+#interplay-laws-dropdown {
+    height: auto; /* Adjust height based on content */
+    min-height: 100px; /* Minimum height to make it scrollable */
+    background-image: none; /* Remove arrow for multi-select */
+}
+
 
 /* Subsection titles */
 .subsection-title {
@@ -127,4 +136,9 @@ main.laws-active, main.videos-active {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* Interplay section specific styles */
+.interplay-section {
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
