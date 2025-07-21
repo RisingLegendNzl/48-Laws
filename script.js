@@ -348,7 +348,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     <h1>POWER</h1>
                     <p class="author-name">by Robert Greene</p>
                 </div>
-                </div>
+                <div class="home-content-area">
+                    </div>
+            </div>
         `,
         laws: `
             <div id="laws-view" class="view view-padding">
@@ -403,6 +405,11 @@ document.addEventListener('DOMContentLoaded', () => {
         appContainer.innerHTML = views[viewName];
         pageTitle.textContent = `${viewName.charAt(0).toUpperCase() + viewName.slice(1)} | 48 Laws Of Power`;
         
+        // Remove all active classes first
+        appContainer.classList.remove('home-active', 'laws-active', 'videos-active');
+        // Add the specific class for the current view
+        appContainer.classList.add(`${viewName}-active`);
+
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.view === viewName);
         });
